@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2>Admin Dashboard</h2>
+
+  <div class="dashboard-grid">
+    <div class="chart-card">
+      <h3>Monthly Order Count (Last 6 Months)</h3>
+      <canvas id="ordersTrend" width="600" height="300"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Top 5 Products by Revenue</h3>
+      <canvas id="salesDist" width="600" height="300"></canvas>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const monthly = JSON.parse('{{ monthly_json|escapejs }}');
+  const labels1 = monthly.map(m => m[0]);
+  const data1   = monthly.map(m => m[1]);
+
+  const cats    = JSON.parse('{{ cat_json|escapejs }}');
+  const labels2 = cats.map(c => c.product__name);
+  const data2   = cats.map(c => c.sales);
+
+  new Chart(document.getElementById('ordersTrend'), {
+    type: 'line',
+    data: { labels: labels1, datasets:[{label:'Orders', data:data1, fill:false, tension:0.3}] },
+    options: { responsive:true, scales:{ y:{ beginAtZero:true } } }
+  });
+
+  new Chart(document.getElementById('salesDist'), {
+    type: 'pie',
+    data: { labels: labels2, datasets:[{data:data2}] },
+    options: { responsive:true }
+  });
+</script>
+{% endblock %}

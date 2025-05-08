@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Product List{% endblock %}
+{% block content %}
+<div class="product-list-column">
+  {% for product in page %}
+    <div class="product-row">
+      <div class="product-row-image">
+        <img src="{% static 'images/preview/'|add:product.preview_image %}" alt="{{ product.name }}">
+      </div>
+      <div class="product-row-info">
+        <h3><a href="{% url 'product_detail' product.id %}">{{ product.name }}</a></h3>
+        <p class="description">{{ product.description|truncatechars:100 }}</p>
+        <div class="meta">
+          <span class="price">¥{{ product.price }}</span>
+          <span class="stock">Stock: {{ product.stock }}</span>
+        </div>
+        <div class="actions">
+          <a href="{% url 'add_to_cart' product.id %}" class="buy-btn">Add to Cart</a>
+          <form method="post" action="{% url 'buy_product' product.id %}" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="buy-btn alt">Buy Now</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+  <div class="pagination-column">
+    {% if page.has_previous %}
+      <a href="?page={{ page.previous_page_number }}{% if q %}&q={{ q }}{% endif %}">&laquo; Prev</a>
+    {% endif %}
+    <span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+    {% if page.has_next %}
+      <a href="?page={{ page.next_page_number }}{% if q %}&q={{ q }}{% endif %}">Next &raquo;</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

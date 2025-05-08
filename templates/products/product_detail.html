@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }}{% endblock %}
+{% block content %}
+<div class="product-detail">
+  <div class="left slider">
+    <div class="arrow prev">&#10094;</div>
+    <div class="arrow next">&#10095;</div>
+    <div class="slides">
+      {% for img in detail_images %}
+        <img
+          src="{% static 'images/detail/' %}{{ img }}"
+          alt="{{ product.name }} slide {{ forloop.counter }}"
+          class="{% if forloop.first %}active{% endif %}">
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="right">
+    <h2>{{ product.name }}</h2>
+    <div class="price">¥{{ product.price }}</div>
+    <p>{{ product.description }}</p>
+
+    {% if user.is_authenticated %}
+      <div class="actions">
+        <a href="{% url 'add_to_cart' product.id %}" class="buy-btn">Add to Cart</a>
+        <form method="post" action="{% url 'buy_product' product.id %}" style="display:inline;">
+          {% csrf_token %}
+          <label>Quantity:
+            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}">
+          </label>
+          <button type="submit" class="buy-btn alt">Buy Now</button>
+        </form>
+      </div>
+    {% else %}
+      <p><a href="{% url 'login' %}">Please log in</a> to purchase.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

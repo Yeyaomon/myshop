@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Orders{% endblock %}
+{% block content %}
+  <h2>My Order History</h2>
+  {% if orders %}
+    <ul>
+      {% for order in orders %}
+        <li>
+          <a href="{% url 'order_detail' order.id %}">
+            Order #{{ order.id }} — {{ order.order_date|date:"Y-m-d H:i" }} — ¥{{ order.total_amount }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You have no past orders. <a href="{% url 'product_list' %}">Start shopping</a>.</p>
+  {% endif %}
+{% endblock %}

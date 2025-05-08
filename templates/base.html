@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}MyShop{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  <!-- Top header with JD-style logo, search bar and user links -->
+  <header class="site-header">
+    <div class="container">
+      <a class="logo" href="/"><img src="{% static 'images/logo.png' %}" alt="MyShop"></a>
+      <form class="search-bar" action="{% url 'product_list' %}" method="get">
+        <input type="text" name="q" placeholder="Search laptops, desktops, accessories…" value="{{ q|default:'' }}">
+        <button type="submit">Search</button>
+      </form>
+      <nav class="user-nav">
+        {% if user.is_authenticated %}
+          Hello, {{ user.username }} |
+          <a href="{% url 'logout' %}">Logout</a> |
+          <a href="{% url 'view_cart' %}">Cart ({{ user.cart.items.count }})</a>
+          <a href="{% url 'order_list' %}">Orders</a>
+        {% else %}
+          <a href="{% url 'login' %}">Login</a>
+        {% endif %}
+        {% if user.is_staff %}
+          | <a href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <!-- Secondary category navigation -->
+  <nav class="category-nav">
+    <div class="container">
+      <a href="/">All Products</a>
+      <a href="?q=Gaming">Gaming Laptops</a>
+      <a href="?q=Ultrabook">Ultrabooks</a>
+      <a href="?q=Mac">MacBooks</a>
+      <a href="?q=Tablet">Tablets</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Site footer -->
+  <footer class="site-footer">
+    <div class="container">
+      &copy; 2025 MyShop E-commerce Platform
+    </div>
+  </footer>
+
+  <!-- Load the slider script -->
+  <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
