@@ -8,7 +8,6 @@ import json, datetime
 from products.models import Product
 from .models import Order, OrderItem, Cart, CartItem
 
-
 @login_required
 def add_to_cart(request, product_id):
     """
@@ -20,7 +19,6 @@ def add_to_cart(request, product_id):
     item.quantity += 1
     item.save()
     return redirect('view_cart')
-
 
 @login_required
 def buy_product(request, product_id):
@@ -39,7 +37,6 @@ def buy_product(request, product_id):
         return redirect('checkout')
     return redirect('product_detail', pk=product_id)
 
-
 @login_required
 def view_cart(request):
     """
@@ -51,7 +48,6 @@ def view_cart(request):
         'cart': cart,
         'edit_mode': edit_mode,
     })
-
 
 @login_required
 def checkout(request):
@@ -69,6 +65,13 @@ def checkout(request):
 
     order = Order.objects.create(user=request.user)
     for item in cart.items.filter(id__in=selected_ids):
+        if item.quantity > item.product.stock:
+            order.delete()
+            return render(request, 'orders/cart.html', {
+                'cart': cart,
+                'edit_mode': False,
+                'error': f'Not enough stock for "{item.product.name}".'
+            })
         OrderItem.objects.create(
             order=order,
             product=item.product,
@@ -86,7 +89,6 @@ def checkout(request):
     order.save()
     return render(request, 'orders/checkout_success.html', {'order': order})
 
-
 @login_required
 def remove_from_cart(request):
     """
@@ -98,7 +100,6 @@ def remove_from_cart(request):
         item.delete()
     return redirect('view_cart')
 
-
 @login_required
 def order_list(request):
     """
@@ -107,7 +108,6 @@ def order_list(request):
     orders = Order.objects.filter(user=request.user).order_by('-order_date')
     return render(request, 'orders/order_list.html', {'orders': orders})
 
-
 @login_required
 def order_detail(request, order_id):
     """
@@ -115,7 +115,6 @@ def order_detail(request, order_id):
     """
     order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, 'orders/order_detail.html', {'order': order})
-
 
 @user_passes_test(lambda u: u.is_staff)
 def admin_dashboard(request):

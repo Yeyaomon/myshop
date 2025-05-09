@@ -1,7 +1,7 @@
-from django.core.management.base import BaseCommand
-from django.db import transaction
 import os
 import pandas as pd
+from django.core.management.base import BaseCommand, CommandError
+from django.db import transaction
 from django.conf import settings
 from products.models import Product
 
@@ -17,12 +17,16 @@ class Command(BaseCommand):
             'EbayPcLaptopsAndNetbooksClean.csv'
         )
 
-        # Read up to 5,000 rows, dropping any rows missing Brand or Price
-        df = (
-            pd.read_csv(path)
-              .dropna(subset=['Brand', 'Price'])
-              .head(5000)
-        )
+        # Read Error Catcher
+        try:
+            # Read up to 5,000 rows, dropping any rows missing Brand or Price
+            df = (pd.read_csv(path)
+                    .dropna(subset=['Brand', 'Price'])
+                    .head(5000))
+        except FileNotFoundError:
+            raise CommandError(f'CSV file not found: {path}')
+        except Exception as e:
+            raise CommandError(f'Error reading CSV: {e}')
 
         # Collect Product instances for bulk insertion
         products_to_create = []
