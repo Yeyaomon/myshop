@@ -1,5 +1,5 @@
 # myshop/settings.py
-
+import os
 from pathlib import Path
 
 # Base directory of the project

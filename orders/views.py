@@ -32,7 +32,7 @@ def buy_product(request, product_id):
             return render(request, 'orders/order_error.html', {'message': 'Out of stock'})
         cart, _ = Cart.objects.get_or_create(user=request.user)
         item, _ = CartItem.objects.get_or_create(cart=cart, product=product)
-        item.quantity += qty
+        item.quantity = qty
         item.save()
         return redirect('checkout')
     return redirect('product_detail', pk=product_id)
