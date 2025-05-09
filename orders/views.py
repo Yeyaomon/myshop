@@ -23,7 +23,8 @@ def add_to_cart(request, product_id):
 @login_required
 def buy_product(request, product_id):
     """
-    “Buy Now”: add specified quantity to cart then go directly to checkout.
+    Buy Now: set the product quantity to exactly the requested amount,
+    then go directly to checkout.
     """
     product = get_object_or_404(Product, pk=product_id)
     if request.method == 'POST':
